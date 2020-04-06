@@ -1,13 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput, Button, FlatList } from 'react-native';
-import films from '../Helpers/filmsData'
-import FilmItem from '../Components/FilmItem'
+import { StyleSheet, View, TextInput, Button, FlatList } from 'react-native';
+import FilmItem from './FilmItem'
+import FilmList from './FilmList'
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi'
 import Spinner from 'react-native-loading-spinner-overlay';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { connect } from 'react-redux'
 
-export default class Search extends React.Component {
+class Search extends React.Component {
 
     constructor(props) {
         super(props)
@@ -64,7 +63,8 @@ export default class Search extends React.Component {
                 <Button style={{ height: 50 }} title="Rechercher" onPress={() => this._searchFilms()} />
                 <FlatList
                     data={this.state.films}
-                    renderItem={({ item }) => <FilmItem data={item} navigation={this.props.navigation}></FilmItem>}
+                    extraData={this.props.favoritesFilm}
+                    renderItem={({ item }) => <FilmItem data={item} isFilmFavorite={(this.props.favoritesFilm.findIndex(film => film.id === item.id) !== -1) ? true : false} navigation={this.props.navigation}></FilmItem>}
                     keyExtractor={item => item.id.toString()}
                     onEndReachedThreshold={0.5}
                     onEndReached= {() => {
@@ -91,3 +91,10 @@ const styles = StyleSheet.create({
         paddingLeft: 5
     }
 });
+
+const mapStateToProps = (state) => {
+    return {
+        favoritesFilm: state.favoritesFilm
+    }
+}
+export default connect(mapStateToProps)(Search)

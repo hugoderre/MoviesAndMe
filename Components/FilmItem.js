@@ -1,23 +1,26 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, Button } from 'react-native'
+import { StyleSheet, Text, View, Image, Button, TouchableOpacity } from 'react-native'
+import { getImageFromApi } from '../API/TMDBApi'
 
 export default function FilmItem(props) {
     const film = props.data;
     return (
-        <View style={styles.container}>
-            <Image style={styles.poster} source={{ uri: 'https://image.tmdb.org/t/p/w500' + film.poster_path }}></Image>
+        
+            <TouchableOpacity style={styles.container} onPress={() => props.navigation.navigate('Detail', film)}>
+            <Image style={styles.poster} source={{ uri: getImageFromApi(film.poster_path) }}></Image>
             <View style={styles.content_container}>
                 <View style={styles.header_container}>
+                    {props.isFilmFavorite && <Image source={require('../img/ic_favorite.png')} style={styles.isFavorite}/>}
                     <Text style={styles.title}>{film.original_title}</Text>
                     <Text style={styles.vote}>{film.vote_average}</Text>
                 </View>
                 <Text style={styles.description_container} numberOfLines={5} >{film.overview}</Text>
                 <View style={styles.footer_container}>
-                    <Button  title="Détails" onPress={() => props.navigation.navigate('Detail', film)}></Button>
                     <Text style={styles.footer_release_date}>Sorti le {film.release_date}</Text>
                 </View>
             </View>
-        </View>
+            </TouchableOpacity>
+        
     )
 }
 
@@ -49,6 +52,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flexWrap: 'wrap'
     },
+    isFavorite: {
+        width:25,
+        height:25
+    },
     vote: {
         flex: 0.2,
         fontSize: 18,
@@ -62,7 +69,7 @@ const styles = StyleSheet.create({
     footer_container: {
         flex: 0.25,
         flexDirection: 'row',
-        justifyContent:'space-between',
+        justifyContent:'flex-end',
     },
     footer_release_date: {
         alignItems:'center',
