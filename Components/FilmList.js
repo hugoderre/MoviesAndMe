@@ -1,7 +1,7 @@
 // Components/FilmList.js
 
 import React from 'react'
-import { StyleSheet, FlatList } from 'react-native'
+import { StyleSheet, FlatList, Text } from 'react-native'
 import FilmItem from './FilmItem'
 import { connect } from 'react-redux'
 
@@ -9,18 +9,16 @@ class FilmList extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      films: []
-    }
+    this._displayDetailForFilm = this._displayDetailForFilm.bind(this)
   }
 
-  _displayDetailForFilm = (idFilm) => {
-    console.log("Display film " + idFilm)
+  _displayDetailForFilm(idFilm)  {
     // On a récupéré les informations de la navigation, on peut afficher le détail du film
     this.props.navigation.navigate('FilmDetail', {idFilm: idFilm})
   }
-
+ 
   render() {
+    
     return (
         <FlatList
           style={styles.list}

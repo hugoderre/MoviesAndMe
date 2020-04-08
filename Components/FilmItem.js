@@ -1,27 +1,37 @@
 import React from 'react'
-import { StyleSheet, Text, View, Image, Button, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, Button, TouchableOpacity, Animated, Dimensions } from 'react-native'
 import { getImageFromApi } from '../API/TMDBApi'
+import FadeIn from '../Animations/FadeIn'
 
-export default function FilmItem(props) {
-    const film = props.data;
-    return (
-        
-            <TouchableOpacity style={styles.container} onPress={() => props.navigation.navigate('Detail', film)}>
-            <Image style={styles.poster} source={{ uri: getImageFromApi(film.poster_path) }}></Image>
-            <View style={styles.content_container}>
-                <View style={styles.header_container}>
-                    {props.isFilmFavorite && <Image source={require('../img/ic_favorite.png')} style={styles.isFavorite}/>}
-                    <Text style={styles.title}>{film.original_title}</Text>
-                    <Text style={styles.vote}>{film.vote_average}</Text>
-                </View>
-                <Text style={styles.description_container} numberOfLines={5} >{film.overview}</Text>
-                <View style={styles.footer_container}>
-                    <Text style={styles.footer_release_date}>Sorti le {film.release_date}</Text>
-                </View>
-            </View>
-            </TouchableOpacity>
-        
-    )
+export default class FilmItem extends React.Component {
+
+    constructor(props) {
+        super(props)
+        this.film = props.film;
+    }
+
+    render() {
+        return (
+            <FadeIn>
+                <TouchableOpacity style={styles.container} onPress={() => this.props.displayDetailForFilm(this.film.id)}>
+                    <Image style={styles.poster} source={{ uri: getImageFromApi(this.film.poster_path) }}></Image>
+                    <View style={styles.content_container}>
+                        <View style={styles.header_container}>
+                            {this.props.isFilmFavorite && <Image source={require('../img/ic_favorite.png')} style={styles.isFavorite} />}
+                            <Text style={styles.title}>{this.film.original_title}</Text>
+                            <Text style={styles.vote}>{this.film.vote_average}</Text>
+                        </View>
+                        <Text style={styles.description_container} numberOfLines={5} >{this.film.overview}</Text>
+                        <View style={styles.footer_container}>
+                            <Text style={styles.footer_release_date}>Sorti le {this.film.release_date}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </FadeIn>
+
+        )
+    }
+
 }
 
 const styles = StyleSheet.create({
@@ -53,8 +63,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     },
     isFavorite: {
-        width:25,
-        height:25
+        width: 25,
+        height: 25
     },
     vote: {
         flex: 0.2,
@@ -69,10 +79,10 @@ const styles = StyleSheet.create({
     footer_container: {
         flex: 0.25,
         flexDirection: 'row',
-        justifyContent:'flex-end',
+        justifyContent: 'flex-end',
     },
     footer_release_date: {
-        alignItems:'center',
-        paddingTop:10
+        alignItems: 'center',
+        paddingTop: 10
     }
 });

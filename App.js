@@ -1,24 +1,36 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { StyleSheet, View, Text, Button, Image } from 'react-native';
+import { StyleSheet, Button, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Search from './Components/Search'
-import Detail from './Components/Detail'
+import FilmDetail from './Components/FilmDetail'
 import Favorites from './Components/Favorites'
 import { Provider } from 'react-redux'
 import Store from './Store/configureStore'
+import Test from './Components/Test'
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function SearchStack() {
-  return(
+  return (
     <Stack.Navigator>
       <Stack.Screen name="Recherche" component={Search} />
-      <Stack.Screen name="Detail" component={Detail} />
+      <Stack.Screen name="FilmDetail" component={FilmDetail}
+        
+      />
+    </Stack.Navigator>
+  )
+}
+
+function FavoritesStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Favoris" component={Favorites} />
+      <Stack.Screen name="FilmDetail" component={FilmDetail} />
     </Stack.Navigator>
   )
 }
@@ -40,6 +52,9 @@ export default class App extends React.Component {
                 } else if (route.name === 'Favoris') {
                   iconName = 'ios-heart';
                 }
+                else if (route.name === 'Test') {
+                  iconName = 'ios-rocket';
+                }
 
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
@@ -47,16 +62,17 @@ export default class App extends React.Component {
             tabBarOptions={{
               activeTintColor: 'black',
               inactiveTintColor: 'gray',
-              activeBackgroundColor:'#DDD',
-              inactiveBackgroundColor:'#FFF',
+              activeBackgroundColor: '#DDD',
+              inactiveBackgroundColor: '#FFF',
               showLabel: false
             }}
           >
-            <Tab.Screen name="Recherche" component={SearchStack} options={{ title: 'Rechercher' }}/>
-            <Tab.Screen name="Favoris" component={Favorites} />
+            <Tab.Screen name="Test" component={Test} />
+            <Tab.Screen name="Recherche" component={SearchStack} options={{ title: 'Rechercher' }} />
+            <Tab.Screen name="Favoris" component={FavoritesStack} />
           </Tab.Navigator>
-          
-          {/* <Stack.Screen name="Detail" component={Detail} /> */}
+
+
         </NavigationContainer>
       </Provider>
     );

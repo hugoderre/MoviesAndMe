@@ -1,22 +1,26 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Button, Image, ScrollView, TouchableOpacity, Share, Platform } from 'react-native';
 import { getImageFromApi, getFilmDetailFromApi } from '../API/TMDBApi'
 import StarSVG from '../svg/star.svg'
 import Spinner from 'react-native-loading-spinner-overlay';
 import numeral from 'numeral'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import EnlargeShrink from '../Animations/EnlargeShrink'
 
 class Detail extends React.Component {
+
     constructor(props) {
         super(props);
-        this.id = props.route.params.id;
+        this.id = props.route.params.idFilm;
         this.navigation = props.navigation;
         this.state = {
             film: undefined,
             spinner: true
         }
+        this._shareFilm = this._shareFilm.bind(this)
     }
+
     componentDidMount() {
         getFilmDetailFromApi(this.id).then(data => {
             this.setState({
@@ -24,6 +28,7 @@ class Detail extends React.Component {
                 spinner: false
             })
         })
+
     }
 
     _displayLoading() {
@@ -36,25 +41,49 @@ class Detail extends React.Component {
         }
     }
 
+    _shareFilm() {
+        const { film } = this.state
+        Share.share({ title: film.title, message: film.overview })
+    }
+
+    _displayFloatingActionButton() {
+        const { film } = this.state
+        if (film != undefined) {
+            return (
+                <View style={styles.share_button_container}>
+                    <TouchableOpacity
+                        style={styles.share_touchable_floatingactionbutton}
+                        onPress={() => this._shareFilm()}>
+                        <Image
+                            style={styles.share_image}
+                            source={require('../img/ic_share.png')}
+                        />
+                    </TouchableOpacity>
+                </View>
+
+            )
+        }
+    }
+
     _toggleFavorite() {
         const action = { type: "TOGGLE_FAVORITE", value: this.state.film }
         this.props.dispatch(action)
     }
 
-    componentDidUpdate() {
-        // console.log(this.props.favoritesFilm)
-    }
-
     _displayFavoriteImage() {
         var sourceImage = require('../img/ic_favorite_border.png')
+        var shouldEnlarge = false
         if (this.props.favoritesFilm.findIndex(item => item.id === this.state.film.id) !== -1) {
             sourceImage = require('../img/ic_favorite.png')
+            shouldEnlarge = true
         }
         return (
-            <Image 
-                source={sourceImage}
-                style={styles.favorite_image}
-            />
+            <EnlargeShrink shouldEnlarge={shouldEnlarge}>
+                <Image
+                    source={sourceImage}
+                    style={styles.favorite_image}
+                />
+            </EnlargeShrink>
         )
     }
 
@@ -95,7 +124,8 @@ class Detail extends React.Component {
                             <Text>{film.overview}</Text>
                         </ScrollView>
                     </View>
-                    <Button title="Retour" onPress={() => this.navigation.goBack()} />
+                    {/* <Button title="Retour" onPress={() => this.navigation.goBack()} /> */}
+
                 </View>
             )
         }
@@ -106,6 +136,7 @@ class Detail extends React.Component {
             <ScrollView>
                 {this._displayLoading()}
                 {this._displayFilm()}
+                {this._displayFloatingActionButton()}
             </ScrollView>
         );
     }
@@ -123,14 +154,15 @@ const styles = StyleSheet.create({
         flex: 0.5,
         width: 180,
         height: 300,
-        marginBottom:10
+        marginBottom: 10
     },
     favorite_container: {
         alignItems: 'center'
     },
     favorite_image: {
-        width:40,
-        height:40
+        flex:1,
+        width: null,
+        height: null
     },
     details_container: {
         flex: 0.1,
@@ -153,7 +185,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 10,
-        marginBottom:10
+        marginBottom: 10
     },
     infos_list: {
         flex: 0.5,
@@ -162,7 +194,36 @@ const styles = StyleSheet.create({
     overview: {
         flex: 0.4,
         marginBottom: 30
-    }
+    },
+    share_button_container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 60
+    },
+    share_touchable_floatingactionbutton: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        ...Platform.select({
+            ios: {
+                marginBottom: 60,
+                backgroundColor:'#bdc3c7'
+            },
+            android: {
+                position: 'absolute',
+                right: 30,
+                backgroundColor:'#e91e63'
+            }
+        }),
+
+    },
+    share_image: {
+        width: 30,
+        height: 30
+    },
 })
 
 const mapStateToProps = (state) => {
