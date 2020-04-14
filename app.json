@@ -41,6 +41,9 @@
         "wasm",
         "svg"
       ]
-    }
-  }
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
+  },
+  "displayName": "Movies And Me",
+  "name": "MoviesAndMe"
 }

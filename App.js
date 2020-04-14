@@ -11,6 +11,9 @@ import Favorites from './Components/Favorites'
 import { Provider } from 'react-redux'
 import Store from './Store/configureStore'
 import Test from './Components/Test'
+import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/es/integration/react'
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,7 +23,7 @@ function SearchStack() {
     <Stack.Navigator>
       <Stack.Screen name="Recherche" component={Search} />
       <Stack.Screen name="FilmDetail" component={FilmDetail}
-        
+
       />
     </Stack.Navigator>
   )
@@ -38,42 +41,45 @@ function FavoritesStack() {
 export default class App extends React.Component {
 
   render() {
+    let persistor = persistStore(Store)
     return (
       <Provider store={Store}>
-        <NavigationContainer>
-          <Tab.Navigator
-            initialRouteName="Recherche"
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ color, size }) => {
-                let iconName;
+        <PersistGate persistor={persistor}>
+          <NavigationContainer>
+            <Tab.Navigator
+              initialRouteName="Recherche"
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ color, size }) => {
+                  let iconName;
 
-                if (route.name === 'Recherche') {
-                  iconName = 'ios-search';
-                } else if (route.name === 'Favoris') {
-                  iconName = 'ios-heart';
-                }
-                else if (route.name === 'Test') {
-                  iconName = 'ios-rocket';
-                }
+                  if (route.name === 'Recherche') {
+                    iconName = 'ios-search';
+                  } else if (route.name === 'Favoris') {
+                    iconName = 'ios-heart';
+                  }
+                  else if (route.name === 'Test') {
+                    iconName = 'ios-rocket';
+                  }
 
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
-            })}
-            tabBarOptions={{
-              activeTintColor: 'black',
-              inactiveTintColor: 'gray',
-              activeBackgroundColor: '#DDD',
-              inactiveBackgroundColor: '#FFF',
-              showLabel: false
-            }}
-          >
-            <Tab.Screen name="Test" component={Test} />
-            <Tab.Screen name="Recherche" component={SearchStack} options={{ title: 'Rechercher' }} />
-            <Tab.Screen name="Favoris" component={FavoritesStack} />
-          </Tab.Navigator>
+                  return <Ionicons name={iconName} size={size} color={color} />;
+                },
+              })}
+              tabBarOptions={{
+                activeTintColor: 'black',
+                inactiveTintColor: 'gray',
+                activeBackgroundColor: '#DDD',
+                inactiveBackgroundColor: '#FFF',
+                showLabel: false
+              }}
+            >
+              <Tab.Screen name="Test" component={Test} />
+              <Tab.Screen name="Recherche" component={SearchStack} options={{ title: 'Rechercher' }} />
+              <Tab.Screen name="Favoris" component={FavoritesStack} />
+            </Tab.Navigator>
 
 
-        </NavigationContainer>
+          </NavigationContainer>
+        </PersistGate>
       </Provider>
     );
   }

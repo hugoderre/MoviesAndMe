@@ -7,6 +7,7 @@ import numeral from 'numeral'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import EnlargeShrink from '../Animations/EnlargeShrink'
+import Avatar from './Avatar'
 
 class Detail extends React.Component {
 
@@ -28,9 +29,8 @@ class Detail extends React.Component {
                 spinner: false
             })
         })
-
     }
-
+    
     _displayLoading() {
         if (this.state.spinner) {
             return (
@@ -87,11 +87,17 @@ class Detail extends React.Component {
         )
     }
 
+   
+
     _displayFilm() {
         const { film } = this.state
         if (film != undefined) {
             return (
                 <View style={styles.main_container}>
+                    <View style={styles.avatar_container}>
+                        <Avatar/>
+                    </View>
+                    
                     <Image source={{ uri: getImageFromApi(film.poster_path) }} style={styles.poster}></Image>
                     <TouchableOpacity style={styles.favorite_container} onPress={() => this._toggleFavorite()}>
                         {this._displayFavoriteImage()}
@@ -150,10 +156,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 10
     },
+    avatar_container: {
+        position:'absolute',
+        top:0,
+        right:10
+    },  
     poster: {
         flex: 0.5,
         width: 180,
         height: 300,
+        marginTop:25,
         marginBottom: 10
     },
     favorite_container: {
@@ -228,7 +240,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
-        favoritesFilm: state.favoritesFilm
+        favoritesFilm: state.toggleFavorite.favoritesFilm,
+        avatar: state.setAvatar.avatar
     }
 }
 export default connect(mapStateToProps)(Detail)
